@@ -41,7 +41,7 @@ jobs:
           || echo "Install failed, continuing"
 
       - name: Delay (anti-batching)
-        run: sleep 5
+        run: node -e "setTimeout(() => {}, Math.floor(Math.random()*3000)+3000)"
 
       - name: Run growth bot safely
         working-directory: ./growth-bot
