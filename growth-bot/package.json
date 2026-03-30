@@ -1,0 +1,10 @@
+{
+  "name": "defikit-growth-bot",
+  "version": "1.0.3",
+  "private": true,
+  "description": "Real usage simulation for defikit",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  }
+}
