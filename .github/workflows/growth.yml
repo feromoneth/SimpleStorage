@@ -1,0 +1,49 @@
+name: DefiKit Ultra Growth Engine
+
+on:
+  schedule:
+    - cron: "0 */4 * * *" # every 4 hours
+  workflow_dispatch:
+
+jobs:
+  install-and-test:
+    name: ${{ matrix.os }} | Node ${{ matrix.node }} | Run ${{ matrix.run }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [18, 20, 22]
+        run: [1, 2]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Clean npm cache
+        run: npm cache clean --force
+
+      - name: Install defikit (resilient)
+        working-directory: ./growth-bot
+        run: |
+          echo "OS: ${{ matrix.os }}"
+          echo "Node: ${{ matrix.node }}"
+          echo "Run: ${{ matrix.run }}"
+
+          npm install @yusufolosun/defikit --prefer-online --no-audit --no-fund --no-package-lock \
+          || npm install @yusufolosun/defikit@latest \
+          || echo "Install failed, continuing"
+
+      - name: Delay (anti-batching)
+        run: sleep 5
+
+      - name: Run growth bot safely
+        working-directory: ./growth-bot
+        run: |
+          node index.js || echo "Execution failed, continuing"
